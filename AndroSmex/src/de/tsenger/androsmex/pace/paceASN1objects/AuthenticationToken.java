@@ -14,7 +14,6 @@ import de.tsenger.androsmex.tools.HexString;
 
 public class AuthenticationToken {
 	
-
 	/**
 	 * Der Tag für das Authentication Token Konstrukt. (0x7F49 ist Public Key)
 	 */
