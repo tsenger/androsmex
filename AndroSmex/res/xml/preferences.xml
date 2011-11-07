@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+	android:title="@string/preferences_titel">
+	<PreferenceCategory android:title="@string/preferences_category_pace">
+		<ListPreference android:entryValues="@array/liste_werte_pacepassword"
+			android:entries="@array/liste_anzeige_pacepassword" android:title="@string/preferences_password_selection"
+			android:defaultValue="2" android:key="pref_list_password"></ListPreference>
+		<ListPreference android:entryValues="@array/liste_werte_terminaltype"
+			android:entries="@array/liste_anzeige_terminaltype" android:title="@string/preferences_terminal_selection"
+			android:defaultValue="2" android:key="pref_list_terminal"></ListPreference>
+	</PreferenceCategory>
+</PreferenceScreen>
