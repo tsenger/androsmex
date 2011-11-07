@@ -2,17 +2,12 @@ package de.tsenger.androsmex.mrtd;
 
 import java.io.IOException;
 
-import ext.org.bouncycastle.asn1.DERObjectIdentifier;
-
 import de.tsenger.androsmex.CardHandler;
 import de.tsenger.androsmex.CommandAPDU;
 import de.tsenger.androsmex.ResponseAPDU;
 import de.tsenger.androsmex.bac.BACFunctions;
 import de.tsenger.androsmex.bac.SecureMessaging;
-import de.tsenger.androsmex.pace.MSECommand;
-import de.tsenger.androsmex.pace.PACEOID;
-import de.tsenger.androsmex.pace.paceASN1objects.CertificateHolderAuthorizationTemplate;
-import de.tsenger.androsmex.pace.paceASN1objects.SecurityInfos;
+import de.tsenger.androsmex.pace.paceASN1objects.SecurityInfos_bc;
 
 public class MRTDTag  {
 	
@@ -90,7 +85,7 @@ public class MRTDTag  {
         
         if (dg2!=null) return dg2;
         ResponseAPDU resp = readBinary((byte)0x02, (byte)0x08);
-        int dg2Length = (int) (JSmexTools.toUnsignedInt(resp.data()[2])*256+JSmexTools.toUnsignedInt(resp.data()[3])+4);
+        int dg2Length = (JSmexTools.toUnsignedInt(resp.data()[2])*256+JSmexTools.toUnsignedInt(resp.data()[3])+4);
         
         int i = 0;
         byte[] dg2Data = new byte[dg2Length];
@@ -109,11 +104,11 @@ public class MRTDTag  {
 	
 	
 	
-	public SecurityInfos getEFCardAccess() throws Exception {
+	public SecurityInfos_bc getEFCardAccess() throws Exception {
 		
-		SecurityInfos efCardAccess = new SecurityInfos();
+		SecurityInfos_bc efCardAccess = new SecurityInfos_bc();
 		ResponseAPDU resp = readBinary((byte)0x1C, (byte)0x08);
-        int dgLength = (int) (JSmexTools.toUnsignedInt(resp.data()[2])*256+JSmexTools.toUnsignedInt(resp.data()[3])+4);
+        int dgLength = (JSmexTools.toUnsignedInt(resp.data()[2])*256+JSmexTools.toUnsignedInt(resp.data()[3])+4);
         
         int i = 0;
         byte[] caData = new byte[dgLength];

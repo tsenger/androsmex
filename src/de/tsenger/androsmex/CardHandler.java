@@ -1,6 +1,5 @@
 package de.tsenger.androsmex;
 
-import java.io.IOException;
 
 public interface CardHandler {
 	

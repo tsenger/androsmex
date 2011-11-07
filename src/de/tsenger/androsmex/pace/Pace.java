@@ -4,16 +4,17 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Random;
 
+import org.spongycastle.asn1.sec.SECNamedCurves;
+import org.spongycastle.asn1.teletrust.TeleTrusTNamedCurves;
+import org.spongycastle.asn1.x9.X9ECParameters;
+import org.spongycastle.crypto.prng.VMPCRandomGenerator;
+import org.spongycastle.math.ec.ECCurve;
+import org.spongycastle.math.ec.ECPoint;
+import org.spongycastle.math.ec.ECPoint.Fp;
+
 import de.tsenger.androsmex.pace.paceASN1objects.PaceInfo_bc;
 import de.tsenger.androsmex.tools.Converter;
 import de.tsenger.androsmex.tools.Crypto;
-import ext.org.bouncycastle.asn1.sec.SECNamedCurves;
-import ext.org.bouncycastle.asn1.teletrust.TeleTrusTNamedCurves;
-import ext.org.bouncycastle.asn1.x9.X9ECParameters;
-import ext.org.bouncycastle.crypto.prng.VMPCRandomGenerator;
-import ext.org.bouncycastle.math.ec.ECCurve;
-import ext.org.bouncycastle.math.ec.ECPoint;
-import ext.org.bouncycastle.math.ec.ECPoint.Fp;
 
 
 public class Pace {
@@ -23,7 +24,7 @@ public class Pace {
 	private ECCurve.Fp curve = null;
 	private byte[] derivatedPassword = null;
 	private byte[] nonce_s = null;
-	private VMPCRandomGenerator randomGenerator = new VMPCRandomGenerator();
+	private final VMPCRandomGenerator randomGenerator = new VMPCRandomGenerator();
 	
 	private BigInteger PCD_SK_x1 = null;
 	private ECPoint PCD_PK_X1 = null;
@@ -44,8 +45,8 @@ public class Pace {
 	
 	
 	private void setPaceParameter(X9ECParameters cp) {
-		pointG = (Fp) cp.getG();
-		curve = (ext.org.bouncycastle.math.ec.ECCurve.Fp) cp.getCurve();
+		pointG = cp.getG();
+		curve = (org.spongycastle.math.ec.ECCurve.Fp) cp.getCurve();
 	}
 	
 	public Pace(PaceInfo_bc pi) throws IOException {
@@ -121,7 +122,7 @@ public class Pace {
 		byte[] x2 = new byte[32];
 		randomGenerator.nextBytes(x2);
 		PCD_SK_x2 = new BigInteger(1, x2);
-		PCD_PK_X2 = (Fp) pointG_strich.multiply(PCD_SK_x2);
+		PCD_PK_X2 = pointG_strich.multiply(PCD_SK_x2);
 		return PCD_PK_X2;
 	}
 	
@@ -178,7 +179,7 @@ public class Pace {
 		if (nonce_s==null) throw new Exception("nonce s not initialized!");
 		BigInteger ms = new BigInteger(1, nonce_s);
 		ECPoint g_temp = pointG.multiply(ms);
-		pointG_strich = (Fp) g_temp.add(SharedSecret_P);
+		pointG_strich = g_temp.add(SharedSecret_P);
 	}
 
 

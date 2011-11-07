@@ -2,16 +2,17 @@ package de.tsenger.androsmex.pace.junittests;
 
 import java.util.Arrays;
 
-import ext.org.bouncycastle.asn1.DERObjectIdentifier;
+import junit.framework.TestCase;
+
+import org.spongycastle.asn1.DERObjectIdentifier;
 
 import de.tsenger.androsmex.pace.paceASN1objects.CertificateHolderAuthorizationTemplate;
 import de.tsenger.androsmex.tools.HexString;
-import junit.framework.TestCase;
 
 public class CertificateHolderAuthorizationTemplateTest extends TestCase {
 	
-	private byte[] chat1 = HexString.hexToBuffer("7f4c12060904007f00070301020253050000000110");
-	private byte[] chat2 = HexString.hexToBuffer("7f4c0e060904007f000703010201530123");
+	private final byte[] chat1 = HexString.hexToBuffer("7f4c12060904007f00070301020253050000000110");
+	private final byte[] chat2 = HexString.hexToBuffer("7f4c0e060904007f000703010201530123");
 
 	public void testGetEncodedChat1() {
 		DERObjectIdentifier id_AT = new DERObjectIdentifier("0.4.0.127.0.7.3.1.2.2");

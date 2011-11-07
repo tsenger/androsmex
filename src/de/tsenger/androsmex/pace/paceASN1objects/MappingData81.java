@@ -1,13 +1,10 @@
 package de.tsenger.androsmex.pace.paceASN1objects;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import ext.org.bouncycastle.asn1.ASN1InputStream;
-import ext.org.bouncycastle.asn1.ASN1OutputStream;
-import ext.org.bouncycastle.asn1.DEREncodable;
-import ext.org.bouncycastle.asn1.DEROctetString;
-import ext.org.bouncycastle.asn1.DERTaggedObject;
+import org.spongycastle.asn1.ASN1InputStream;
+import org.spongycastle.asn1.DEROctetString;
+import org.spongycastle.asn1.DERTaggedObject;
 
 
 

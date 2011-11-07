@@ -2,9 +2,10 @@ package de.tsenger.androsmex.pace.junittests;
 
 import java.util.Arrays;
 
-import ext.org.bouncycastle.asn1.DERObjectIdentifier;
-
 import junit.framework.TestCase;
+
+import org.spongycastle.asn1.DERObjectIdentifier;
+
 import de.tsenger.androsmex.pace.MSECommand;
 import de.tsenger.androsmex.pace.PACEOID;
 import de.tsenger.androsmex.pace.paceASN1objects.CertificateHolderAuthorizationTemplate;
@@ -12,9 +13,10 @@ import de.tsenger.androsmex.tools.HexString;
 
 public class MSECommandTest extends TestCase {
 	
-	private byte[] mse1 = HexString.hexToBuffer("0022c1a424800a04007f000702020402028301027f4c12060904007f00070301020253053FFFFFFFF7");
-	private byte[] mse2 = HexString.hexToBuffer("0022c1a424800a04007f000702020402028301037f4c12060904007f00070301020253053FFFFFFFF7");
+	private final byte[] mse1 = HexString.hexToBuffer("0022c1a424800a04007f000702020402028301027f4c12060904007f00070301020253053FFFFFFFF7");
+	private final byte[] mse2 = HexString.hexToBuffer("0022c1a424800a04007f000702020402028301037f4c12060904007f00070301020253053FFFFFFFF7");
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 	}

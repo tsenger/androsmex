@@ -3,27 +3,28 @@ package de.tsenger.androsmex.pace.junittests;
 import java.math.BigInteger;
 import java.util.Arrays;
 
+import junit.framework.TestCase;
 
-import ext.org.bouncycastle.asn1.DERObjectIdentifier;
-import ext.org.bouncycastle.asn1.teletrust.TeleTrusTNamedCurves;
-import ext.org.bouncycastle.asn1.x9.X9ECParameters;
-import ext.org.bouncycastle.math.ec.ECCurve;
-import ext.org.bouncycastle.math.ec.ECCurve.Fp;
-import ext.org.bouncycastle.math.ec.ECFieldElement;
-import ext.org.bouncycastle.math.ec.ECPoint;
+import org.spongycastle.asn1.DERObjectIdentifier;
+import org.spongycastle.asn1.teletrust.TeleTrusTNamedCurves;
+import org.spongycastle.asn1.x9.X9ECParameters;
+import org.spongycastle.math.ec.ECCurve;
+import org.spongycastle.math.ec.ECCurve.Fp;
+import org.spongycastle.math.ec.ECFieldElement;
+import org.spongycastle.math.ec.ECPoint;
 
 import de.tsenger.androsmex.pace.Pace;
 import de.tsenger.androsmex.pace.paceASN1objects.PaceInfo_bc;
 import de.tsenger.androsmex.tools.HexString;
-import junit.framework.TestCase;
 
 public class Pace_bcTest extends TestCase {
 	
-	private String z = "e6d5956aad397c35ea4be034da2d81a5"; //encrypted nonce
+	private final String z = "e6d5956aad397c35ea4be034da2d81a5"; //encrypted nonce
 	
 	private Pace paceObject = null;
 	
 	
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		paceObject = new Pace(new PaceInfo_bc(new DERObjectIdentifier("0.4.0.127.0.7.2.2.4.2.2"), 2, 13));

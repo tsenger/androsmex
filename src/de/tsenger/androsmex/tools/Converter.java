@@ -2,9 +2,9 @@ package de.tsenger.androsmex.tools;
 
 import java.math.BigInteger;
 
-import ext.org.bouncycastle.math.ec.ECCurve;
-import ext.org.bouncycastle.math.ec.ECFieldElement;
-import ext.org.bouncycastle.math.ec.ECPoint;
+import org.spongycastle.math.ec.ECCurve;
+import org.spongycastle.math.ec.ECFieldElement;
+import org.spongycastle.math.ec.ECPoint;
 
 public class Converter {
 	

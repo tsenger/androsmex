@@ -2,10 +2,10 @@ package de.tsenger.androsmex.pace;
 
 import java.io.IOException;
 
-import ext.org.bouncycastle.asn1.DERInteger;
-import ext.org.bouncycastle.asn1.DERObjectIdentifier;
-import ext.org.bouncycastle.asn1.DEROctetString;
-import ext.org.bouncycastle.asn1.DERTaggedObject;
+import org.spongycastle.asn1.DERInteger;
+import org.spongycastle.asn1.DERObjectIdentifier;
+import org.spongycastle.asn1.DEROctetString;
+import org.spongycastle.asn1.DERTaggedObject;
 
 import de.tsenger.androsmex.CommandAPDU;
 import de.tsenger.androsmex.pace.paceASN1objects.CertificateHolderAuthorizationTemplate;
@@ -21,8 +21,8 @@ public class MSECommand extends CommandAPDU{
 	public static int KeyReference_PIN = 3;
 	public static int KeyReference_PUK = 4;
 	
-	private byte CLASS = (byte)0x00;
-	private byte INS = (byte)0x22; //Instruction Byte: Message Security Environment
+	private final byte CLASS = (byte)0x00;
+	private final byte INS = (byte)0x22; //Instruction Byte: Message Security Environment
 	private byte[] P1P2 = null;
 	private byte[] CMR = null;
 	private byte[] passwordReferenz = null;
@@ -135,6 +135,7 @@ public class MSECommand extends CommandAPDU{
 	/* Konstruiert aus den gesetzten Objekten eine MSE-Command-APDU und liefert diese als Byte-Array zurück.
 	 * @see de.tsenger.androsmex.CommandAPDU#getBytes()
 	 */
+	@Override
 	public byte[] getBytes() {
 		append(CLASS);
 		append(INS);

@@ -2,12 +2,12 @@ package de.tsenger.androsmex.pace.paceASN1objects;
 
 import java.io.IOException;
 
-import ext.org.bouncycastle.asn1.ASN1EncodableVector;
-import ext.org.bouncycastle.asn1.ASN1Sequence;
-import ext.org.bouncycastle.asn1.DERApplicationSpecific;
-import ext.org.bouncycastle.asn1.DEROctetString;
-import ext.org.bouncycastle.asn1.DERTaggedObject;
-import ext.org.bouncycastle.asn1.DERTags;
+import org.spongycastle.asn1.ASN1EncodableVector;
+import org.spongycastle.asn1.ASN1Sequence;
+import org.spongycastle.asn1.DERApplicationSpecific;
+import org.spongycastle.asn1.DEROctetString;
+import org.spongycastle.asn1.DERTaggedObject;
+import org.spongycastle.asn1.DERTags;
 
 
 /** De-/Kodiert die ASN1-Strukturen die für PACE (General Authenticate) benötigt werden. 

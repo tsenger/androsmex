@@ -5,10 +5,10 @@ package de.tsenger.androsmex.pace.paceASN1objects;
 
 import java.io.IOException;
 
-import ext.org.bouncycastle.asn1.ASN1Object;
-import ext.org.bouncycastle.asn1.ASN1Set;
-import ext.org.bouncycastle.asn1.DERObjectIdentifier;
-import ext.org.bouncycastle.asn1.DERSequence;
+import org.spongycastle.asn1.ASN1Object;
+import org.spongycastle.asn1.ASN1Set;
+import org.spongycastle.asn1.DERObjectIdentifier;
+import org.spongycastle.asn1.DERSequence;
 
 /**
  *

@@ -2,15 +2,15 @@ package de.tsenger.androsmex.pace.paceASN1objects;
 
 import java.math.BigInteger;
 
+import org.spongycastle.asn1.DERObjectIdentifier;
+import org.spongycastle.crypto.BlockCipher;
+import org.spongycastle.crypto.engines.AESFastEngine;
+import org.spongycastle.crypto.macs.CMac;
+import org.spongycastle.crypto.params.KeyParameter;
+import org.spongycastle.math.ec.ECPoint;
+
 import de.tsenger.androsmex.tools.Converter;
 import de.tsenger.androsmex.tools.HexString;
-
-import ext.org.bouncycastle.asn1.DERObjectIdentifier;
-import ext.org.bouncycastle.crypto.BlockCipher;
-import ext.org.bouncycastle.crypto.engines.AESFastEngine;
-import ext.org.bouncycastle.crypto.macs.CMac;
-import ext.org.bouncycastle.crypto.params.KeyParameter;
-import ext.org.bouncycastle.math.ec.ECPoint;
 
 public class AuthenticationToken {
 	
@@ -22,15 +22,15 @@ public class AuthenticationToken {
 	
 	
     private DERObjectIdentifier oid06 = null;
-    private BigInteger p81 = null;
-    private BigInteger a82 = null;
-    private BigInteger b83 = null;
-    private ECPoint G84 = null;
-    private BigInteger r85 = null;
+    private final BigInteger p81 = null;
+    private final BigInteger a82 = null;
+    private final BigInteger b83 = null;
+    private final ECPoint G84 = null;
+    private final BigInteger r85 = null;
     private ECPoint Y86 = null;
-    private BigInteger f87 = null;
+    private final BigInteger f87 = null;
     
-    private byte[] token = new byte[8];
+    private final byte[] token = new byte[8];
     private byte[] x_bytes = null;
     private byte[] y_bytes = null;
     

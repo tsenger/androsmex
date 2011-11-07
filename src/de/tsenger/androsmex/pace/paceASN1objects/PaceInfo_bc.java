@@ -1,8 +1,8 @@
 package de.tsenger.androsmex.pace.paceASN1objects;
 
-import ext.org.bouncycastle.asn1.DERObjectIdentifier;
-import ext.org.bouncycastle.asn1.DERSequence;
-import ext.org.bouncycastle.asn1.DERInteger;
+import org.spongycastle.asn1.DERInteger;
+import org.spongycastle.asn1.DERObjectIdentifier;
+import org.spongycastle.asn1.DERSequence;
 
 public class PaceInfo_bc {
 	

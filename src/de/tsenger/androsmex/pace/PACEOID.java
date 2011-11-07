@@ -1,6 +1,6 @@
 package de.tsenger.androsmex.pace;
 
-import ext.org.bouncycastle.asn1.DERObjectIdentifier;
+import org.spongycastle.asn1.DERObjectIdentifier;
 
 public class PACEOID {
 	//TODO Liste vervollständigen. Siehe TR-03110 A.1.1.1 PACE

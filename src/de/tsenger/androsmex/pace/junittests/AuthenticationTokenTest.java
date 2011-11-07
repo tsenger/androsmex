@@ -3,24 +3,27 @@ package de.tsenger.androsmex.pace.junittests;
 import java.math.BigInteger;
 
 import junit.framework.TestCase;
+
+import org.spongycastle.asn1.DERObjectIdentifier;
+import org.spongycastle.asn1.teletrust.TeleTrusTNamedCurves;
+import org.spongycastle.asn1.x9.X9ECParameters;
+import org.spongycastle.math.ec.ECCurve;
+import org.spongycastle.math.ec.ECFieldElement;
+import org.spongycastle.math.ec.ECPoint;
+import org.spongycastle.math.ec.ECPoint.Fp;
+
 import de.tsenger.androsmex.pace.paceASN1objects.AuthenticationToken;
 import de.tsenger.androsmex.tools.HexString;
-import ext.org.bouncycastle.asn1.DERObjectIdentifier;
-import ext.org.bouncycastle.asn1.teletrust.TeleTrusTNamedCurves;
-import ext.org.bouncycastle.asn1.x9.X9ECParameters;
-import ext.org.bouncycastle.math.ec.ECCurve;
-import ext.org.bouncycastle.math.ec.ECFieldElement;
-import ext.org.bouncycastle.math.ec.ECPoint;
-import ext.org.bouncycastle.math.ec.ECPoint.Fp;
 
 public class AuthenticationTokenTest extends TestCase {
 
 	ECCurve.Fp curve = null;
 
+	@Override
 	protected void setUp() throws Exception {
 		X9ECParameters cp = TeleTrusTNamedCurves.getByName("brainpoolp256r1");
 		Fp pointG = (Fp) cp.getG();
-		curve = (ext.org.bouncycastle.math.ec.ECCurve.Fp) cp.getCurve();
+		curve = (org.spongycastle.math.ec.ECCurve.Fp) cp.getCurve();
 		
 	}
 	

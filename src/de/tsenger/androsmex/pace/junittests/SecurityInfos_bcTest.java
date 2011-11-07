@@ -5,15 +5,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import de.tsenger.androsmex.pace.paceASN1objects.SecurityInfos_bc;
-import ext.org.bouncycastle.asn1.DERObjectIdentifier;
-
 import junit.framework.TestCase;
+
+import org.spongycastle.asn1.DERObjectIdentifier;
+
+import de.tsenger.androsmex.pace.paceASN1objects.SecurityInfos_bc;
 
 public class SecurityInfos_bcTest extends TestCase {
 	
 	SecurityInfos_bc si = null;
 
+	@Override
 	protected void setUp() throws Exception {
 		si = new SecurityInfos_bc();
 		super.setUp();

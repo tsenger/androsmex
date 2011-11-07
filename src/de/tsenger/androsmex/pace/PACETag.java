@@ -1,6 +1,9 @@
 package de.tsenger.androsmex.pace;
 
 
+import org.spongycastle.asn1.DERObjectIdentifier;
+import org.spongycastle.math.ec.ECPoint;
+
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.widget.TextView;
@@ -14,14 +17,13 @@ import de.tsenger.androsmex.pace.paceASN1objects.PaceInfo_bc;
 import de.tsenger.androsmex.pace.paceASN1objects.SecurityInfos_bc;
 import de.tsenger.androsmex.tools.Converter;
 import de.tsenger.androsmex.tools.HexString;
-import ext.org.bouncycastle.asn1.DERObjectIdentifier;
-import ext.org.bouncycastle.math.ec.ECPoint;
+
 
 public class PACETag extends AsyncTask<Void, String, String>{
 
-	private CardHandler card;
-	private String password;
-	private TextView txtview;
+	private final CardHandler card;
+	private final String password;
+	private final TextView txtview;
 	private int pwRef = 0;
 	private int terminalRef = 0;
 

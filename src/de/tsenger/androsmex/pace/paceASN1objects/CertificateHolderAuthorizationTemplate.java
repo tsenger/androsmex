@@ -2,7 +2,9 @@ package de.tsenger.androsmex.pace.paceASN1objects;
 
 import java.io.IOException;
 import java.util.Arrays;
-import ext.org.bouncycastle.asn1.DERObjectIdentifier;
+
+import org.spongycastle.asn1.DERObjectIdentifier;
+
 import de.tsenger.androsmex.pace.PACEOID;
 
 public class CertificateHolderAuthorizationTemplate {

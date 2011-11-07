@@ -12,9 +12,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import ext.org.bouncycastle.crypto.BlockCipher;
-import ext.org.bouncycastle.crypto.engines.AESFastEngine;
-import ext.org.bouncycastle.crypto.params.KeyParameter;
+import org.spongycastle.crypto.BlockCipher;
+import org.spongycastle.crypto.engines.AESFastEngine;
+import org.spongycastle.crypto.params.KeyParameter;
 
 public class Crypto {
 
