@@ -34,7 +34,7 @@ public class AuthenticationToken {
     private byte[] y_bytes = null;
     
 
-    //TODO Konstruktor für AuthToken Version 1 implementieren
+    //TODO Konstruktor für AuthToken Version 1 implementieren...
     public AuthenticationToken(DERObjectIdentifier oid, 
     		BigInteger primeModulus, 
     		BigInteger firstCoefficient,
