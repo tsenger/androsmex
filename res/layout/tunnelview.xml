@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent" android:background="#ff999977"
+	android:layout_height="match_parent" android:orientation="vertical"
+	android:id="@+id/tunnelview_send_button">
+	<LinearLayout android:id="@+id/linearLayout1"
+		android:layout_height="wrap_content" android:layout_width="match_parent">
+		<MultiAutoCompleteTextView android:text="MultiAutoCompleteTextView"
+			android:id="@+id/multiAutoCompleteTextView1" android:layout_width="wrap_content"
+			android:layout_height="wrap_content"></MultiAutoCompleteTextView>
+		<Button android:id="@+id/button1" android:text="send"
+			android:layout_height="match_parent" android:layout_width="wrap_content"
+			android:layout_gravity="right"></Button>
+	</LinearLayout>
+	<ScrollView android:layout_height="match_parent"
+		android:layout_width="match_parent" android:id="@+id/scrollView1"
+		android:layout_margin="6dip">
+		<LinearLayout android:id="@+id/linearLayout2"
+			android:layout_width="match_parent">
+			<TextView android:text="TextView" android:id="@+id/textView1"
+				android:layout_width="match_parent" android:background="#fffefefe"
+				android:layout_height="fill_parent" android:lines="50"
+				android:textSize="10sp"></TextView>
+		</LinearLayout>
+	</ScrollView>
+
+</LinearLayout>
