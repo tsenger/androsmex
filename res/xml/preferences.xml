@@ -9,4 +9,9 @@
 			android:entries="@array/liste_anzeige_terminaltype" android:title="@string/preferences_terminal_selection"
 			android:defaultValue="2" android:key="pref_list_terminal"></ListPreference>
 	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/preferences_category_log">
+	    <ListPreference android:entryValues="@array/liste_werte_loglevel"
+			android:entries="@array/liste_anzeige_loglevel" android:title="@string/preferences_loglevel_selection"
+			android:defaultValue="2" android:key="pref_list_log"></ListPreference>
+	</PreferenceCategory>
 </PreferenceScreen>

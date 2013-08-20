@@ -23,6 +23,19 @@
 		<item>1</item>
 		<item>2</item>
 		<item>3</item>
-
+	</string-array>
+	<string-array name="liste_anzeige_loglevel">
+		<item>Log ALL</item>
+		<item>Log FINER</item>
+		<item>Log FINE (e.g. APDU)</item>
+		<item>Log INFO </item>
+		<item>Log WARNING</item>
+	</string-array>
+	<string-array name="liste_werte_loglevel">
+	    <item>ALL</item>
+		<item>FINER</item>
+		<item>FINE</item>
+		<item>INFO</item>
+		<item>WARNING</item>
 	</string-array>
 </resources>

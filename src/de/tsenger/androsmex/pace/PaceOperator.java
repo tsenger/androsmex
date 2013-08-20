@@ -26,6 +26,8 @@ import static de.tsenger.androsmex.pace.DHStandardizedDomainParameters.modp2048_
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.spongycastle.asn1.ASN1Sequence;
 import org.spongycastle.asn1.sec.SECNamedCurves;
@@ -64,7 +66,7 @@ import de.tsenger.androsmex.tools.HexString;
 public class PaceOperator extends AsyncTask<Void, String, String> {
 
 	private final IsoDepCardHandler card;
-	private TextView txtview;
+	private Logger logger;
 	private int passwordRef = 0;
 	private int terminalType = 0;
 	private byte[] passwordBytes;
@@ -80,6 +82,8 @@ public class PaceOperator extends AsyncTask<Void, String, String> {
 	
 	private Context context;
 	
+	long starttime = 0;
+	long endtime = 0;
 	
 
 	public PaceOperator(IsoDepCardHandler card, Context context) {
@@ -87,10 +91,10 @@ public class PaceOperator extends AsyncTask<Void, String, String> {
 		this.context = context;
 	}
 
-	public void setAuthTemplate(PaceInfo pi, String password, TextView txtview, SharedPreferences prefs) {
+	public void setAuthTemplate(PaceInfo pi, String password, Logger logger, SharedPreferences prefs) {
 
 		dp = new DomainParameter(pi.getParameterId());
-		this.txtview = txtview;
+		this.logger = logger;
 		passwordRef = Integer.parseInt(prefs.getString("pref_list_password", "0"));
 		terminalType = Integer.parseInt(prefs.getString("pref_list_terminal", "0"));
 
@@ -110,10 +114,10 @@ public class PaceOperator extends AsyncTask<Void, String, String> {
 	}
 
 	public void setAuthTemplate(PaceInfo pi, PaceDomainParameterInfo pdpi,
-			String password, TextView txtview, SharedPreferences prefs)
+			String password, Logger logger, SharedPreferences prefs)
 			throws Exception {
 
-		this.txtview = txtview;
+		this.logger = logger;
 		protocolOIDString = pi.getProtocolOID();
 		passwordRef = Integer.parseInt(prefs.getString("pref_list_password", "0"));
 		terminalType = Integer.parseInt(prefs.getString("pref_list_terminal", "0"));
@@ -493,10 +497,11 @@ public class PaceOperator extends AsyncTask<Void, String, String> {
 
 	@Override
 	protected String doInBackground(Void... params) {
-		long starttime = System.currentTimeMillis();
-
+				
 		try {
+			starttime = System.currentTimeMillis();
 			performPACE();
+			endtime = System.currentTimeMillis();
 		} catch (IOException e) {
 			publishProgress(e.getMessage());
 			return "PACE failed!";
@@ -507,24 +512,22 @@ public class PaceOperator extends AsyncTask<Void, String, String> {
 			publishProgress(e.getMessage());
 			return "PACE failed!";
 		}
-
-		long endtime = System.currentTimeMillis();
-		publishProgress("Time used: " + (endtime - starttime) + " ms\n");
+		
 		return "PACE established!";
 	}
 
 	@Override
 	protected void onProgressUpdate(String... strings) {
 		if (strings != null) {
-			txtview.append(strings[0] + "\n");
+			logger.log(Level.FINE, strings[0]);
 		}
 	}
 
 	@Override
-	protected void onPostExecute(String string) {
+	protected void onPostExecute(String result) {
 				
 		Intent intent = new Intent("pace_finished");
-		intent.putExtra("message", "PACE finished");
+		intent.putExtra("message", result+"\nTime used: " + (endtime - starttime) + " ms");
 		LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 	}
 

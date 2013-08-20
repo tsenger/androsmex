@@ -9,7 +9,9 @@
 	<string name="preferences_titel">Preferences</string>
 	<string name="preferences_password_selection">PACE password</string>
 	<string name="preferences_terminal_selection">Terminal type</string>
+	<string name="preferences_loglevel_selection">Log level</string>
 	<string name="preferences_category_pace">PACE settings</string>
+	<string name="preferences_category_log">Log setting</string>
 	<string name="app_version">version 0.2</string>
 	<string name="startseite_text_newPin">new PIN</string>
 	<string name="status_sm_inactive">Secure Messaging inactive</string>

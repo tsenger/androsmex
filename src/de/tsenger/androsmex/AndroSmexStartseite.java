@@ -1,6 +1,8 @@
 package de.tsenger.androsmex;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -33,6 +35,7 @@ import de.tsenger.androsmex.asn1.SecurityInfos;
 import de.tsenger.androsmex.iso7816.CardCommands;
 import de.tsenger.androsmex.iso7816.CommandAPDU;
 import de.tsenger.androsmex.iso7816.FileAccess;
+import de.tsenger.androsmex.iso7816.ResponseAPDU;
 import de.tsenger.androsmex.iso7816.SecureMessagingException;
 import de.tsenger.androsmex.pace.PaceOperator;
 import de.tsenger.androsmex.tools.HexString;
@@ -55,6 +58,8 @@ public class AndroSmexStartseite extends Activity{
 	OnSharedPreferenceChangeListener spListener = null;
 	
 	private String nextAction;
+	
+	 private static final Logger asLogger = Logger.getLogger("AndroSmex");
 	
 	
 	/**
@@ -99,6 +104,10 @@ public class AndroSmexStartseite extends Activity{
 		ergebnisText.setTypeface(Typeface.MONOSPACE);
 		registerTextChangedListerner();
 		
+		//Set up Logger to TextView
+		TextViewHandler handler = new TextViewHandler(ergebnisText);
+		asLogger.addHandler(handler);
+		asLogger.setLevel(Level.INFO);
 		
 		prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		registerPreferenceListener();
@@ -138,28 +147,26 @@ public class AndroSmexStartseite extends Activity{
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("pace_finished"));
 		
 		//Register on sharedPrefs changes
-		if (spListener==null) prefs.registerOnSharedPreferenceChangeListener(spListener);
+//		if (spListener==null) prefs.registerOnSharedPreferenceChangeListener(spListener);
 	}
 
 	@Override
 	public void onNewIntent(Intent intent) {
-		Log.i("Foreground dispatch", "Discovered tag with intent: " + intent);
+		asLogger.log(Level.FINER, "onNewIntent discovered tag with intent: " + intent);
 		
 		try {
 			resolveIntent(intent);
 		} catch (IOException e) {
-			ergebnisText.append("ERROR:"+e.getMessage());
+			asLogger.log(Level.SEVERE, "onNewIntent throwed IOException", e);
 		}
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		mAdapter.disableForegroundDispatch(this);
-		
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-		
-		prefs.unregisterOnSharedPreferenceChangeListener(spListener);
+		mAdapter.disableForegroundDispatch(this);		
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);		
+//		prefs.unregisterOnSharedPreferenceChangeListener(spListener);
 	}
 	
 	@Override
@@ -195,9 +202,9 @@ public class AndroSmexStartseite extends Activity{
 			efcaBytes = facs.getFile(fid_efca);
 			si = new SecurityInfos();
 			si.decode(efcaBytes);
-			ergebnisText.append("EF.CardAccess:\n"+HexString.bufferToHex(efcaBytes)+"\n");
+			asLogger.log(Level.FINE, "Content of EF.CardAccess:\n"+HexString.bufferToHex(efcaBytes));
 		} catch (Exception e1) {
-			ergebnisText.append(e1.getMessage()+"\n");
+			asLogger.log(Level.WARNING, "getSecurityInfosFromCardAccess() throws exception", e1);
 		}
 		return si;
 	}
@@ -209,9 +216,10 @@ public class AndroSmexStartseite extends Activity{
 			IsoDep isoDepTag = IsoDep.get(discoveredTag);
 			idch = new IsoDepCardHandler(isoDepTag);
 			
-			ergebnisText.append("\nUID: " + HexString.bufferToHex(discoveredTag.getId())+"\nTag technologies:\n");
+			asLogger.log(Level.INFO, "Tag ID: " + HexString.bufferToHex(discoveredTag.getId()));
 			String[] techList = discoveredTag.getTechList();
-			for (int i=0;i<techList.length;i++) ergebnisText.append(i+1+": "+ techList[i]+"\n");
+			asLogger.log(Level.FINER, "Tag technologies:");
+			for (int i=0;i<techList.length;i++) asLogger.log(Level.FINER, i+1+": "+ techList[i]);
 		}
 	}
 	
@@ -219,9 +227,9 @@ public class AndroSmexStartseite extends Activity{
 	private void performPACE(String pin) {	
 		SecurityInfos si = getSecurityInfosFromCardAccess();		
 		ptag = new PaceOperator(idch, getApplicationContext());	
-		ptag.setAuthTemplate(si.getPaceInfoList().get(0), pin, ergebnisText, prefs);
-		ergebnisText.append("Start PACE\n----------\n");
-		ptag.execute((Void[])null).toString();
+		ptag.setAuthTemplate(si.getPaceInfoList().get(0), pin, asLogger, prefs);
+		asLogger.log(Level.INFO, "Start PACE");
+		ptag.execute((Void[])null);
 	}
 	
 	
@@ -231,8 +239,11 @@ public class AndroSmexStartseite extends Activity{
 		if (idch.isSmActive()) {
 			try {
 				CommandAPDU capdu = CardCommands.resetRetryCounter((byte)0x03,newPin.getBytes());
-				ergebnisText.append("Reset Retry Counter:\n"+HexString.bufferToHex(capdu.getBytes()));
-				ergebnisText.append("Receive:\n"+HexString.bufferToHex(idch.transceive(capdu).getBytes()));
+				asLogger.log(Level.FINE, "Reset Retry Counter CAPDU:\n"+HexString.bufferToHex(capdu.getBytes()));
+				ResponseAPDU rapdu = idch.transceive(capdu);
+				asLogger.log(Level.FINE, "Received RAPDU:\n"+HexString.bufferToHex(rapdu.getBytes()));
+				if (rapdu.getSW()==0x9000) asLogger.log(Level.INFO, "PIN changed successful");
+				else asLogger.log(Level.INFO, "PIN changed failed");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -241,7 +252,7 @@ public class AndroSmexStartseite extends Activity{
 				e.printStackTrace();
 			}
 			
-		} else ergebnisText.append("Secure Messaging not active!");
+		} else asLogger.log(Level.INFO, "Couldn't change PIN: Secure Messaging not active!");
 	}
 	
 	
@@ -258,7 +269,7 @@ public class AndroSmexStartseite extends Activity{
 	  public void onReceive(Context context, Intent intent) {
 	    // Extract data included in the Intent
 	    String message = intent.getStringExtra("message");
-	    Log.d("receiver", "Got message: " + message);
+	    asLogger.log(Level.INFO, message);
 	    nextActionSwitcher();
 	  }
 	};
@@ -287,7 +298,10 @@ public class AndroSmexStartseite extends Activity{
 	private void registerPreferenceListener()	{		 
 		spListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
 	    	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-	    		Log.d("PrefListener","LISTENING! - Pref changed for: " + key + " pref: " + prefs.getString(key, null));
+	    		asLogger.log(Level.FINER, "Pref changed for: " + key + " to " + prefs.getString(key, null));
+	    		
+	    		asLogger.setLevel(Level.parse(prefs.getString("pref_list_log", "INFO")));
+	    		
 	    		int passwordRef = Integer.parseInt(prefs.getString("pref_list_password", "0"));
 	    		int terminalType = Integer.parseInt(prefs.getString("pref_list_terminal", "0"));
 
