@@ -47,10 +47,12 @@ public class AndroSmexStartseite extends Activity{
 	PaceOperator ptag = null;
 
 	TextView ergebnisText = null;
+	TextWatcher tWatcher = null;
+	
 	Button buttonStart = null;
 	
 	SharedPreferences prefs = null;
-	OnSharedPreferenceChangeListener listener = null;
+	OnSharedPreferenceChangeListener spListener = null;
 	
 	private String nextAction;
 	
@@ -95,21 +97,8 @@ public class AndroSmexStartseite extends Activity{
 		ergebnisText = (TextView) findViewById(R.id.text_ergebnis);
 		ergebnisText.setMovementMethod(new ScrollingMovementMethod());
 		ergebnisText.setTypeface(Typeface.MONOSPACE);
-		ergebnisText.addTextChangedListener(new TextWatcher(){
-			@Override
-			public void afterTextChanged(Editable s) {
-				TextView smIndicator = (TextView) findViewById(R.id.textView_SM_Indicator);
-			    if (idch!=null&&idch.isSmActive()) {	    	
-			    	smIndicator.setBackgroundColor(Color.GREEN);
-			    	smIndicator.setText(getString(R.string.status_sm_active));
-			    } else {
-			    	smIndicator.setBackgroundColor(Color.parseColor("#FFE0E00F"));
-			    	smIndicator.setText(getString(R.string.status_sm_inactive));
-			    }
-	        }
-	        public void beforeTextChanged(CharSequence s, int start, int count, int after){}
-	        public void onTextChanged(CharSequence s, int start, int before, int count){}
-	    }); 
+		registerTextChangedListerner();
+		
 		
 		prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		registerPreferenceListener();
@@ -131,6 +120,7 @@ public class AndroSmexStartseite extends Activity{
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("pace_finished"));
 	}
 
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -148,7 +138,7 @@ public class AndroSmexStartseite extends Activity{
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("pace_finished"));
 		
 		//Register on sharedPrefs changes
-		if (listener== null) prefs.registerOnSharedPreferenceChangeListener(listener);
+		if (spListener==null) prefs.registerOnSharedPreferenceChangeListener(spListener);
 	}
 
 	@Override
@@ -169,7 +159,7 @@ public class AndroSmexStartseite extends Activity{
 		
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 		
-		prefs.unregisterOnSharedPreferenceChangeListener(listener);
+		prefs.unregisterOnSharedPreferenceChangeListener(spListener);
 	}
 	
 	@Override
@@ -195,13 +185,12 @@ public class AndroSmexStartseite extends Activity{
 	    }
 	}
 
-	private SecurityInfos getSecurityInfosFromCardAccess() {
-		
+	
+	private SecurityInfos getSecurityInfosFromCardAccess() {		
 		byte[] fid_efca = new byte[]{(byte) 0x01, (byte)0x1C};
 		FileAccess facs = new FileAccess(idch);
 		byte[] efcaBytes = null;
-		SecurityInfos si = null;
-		
+		SecurityInfos si = null;		
 		try {
 			efcaBytes = facs.getFile(fid_efca);
 			si = new SecurityInfos();
@@ -212,13 +201,11 @@ public class AndroSmexStartseite extends Activity{
 		}
 		return si;
 	}
+	
 
 	private void resolveIntent(Intent intent) throws IOException {
-
-		Tag discoveredTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-		
-		if (discoveredTag != null) {
-			
+		Tag discoveredTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);		
+		if (discoveredTag != null) {			
 			IsoDep isoDepTag = IsoDep.get(discoveredTag);
 			idch = new IsoDepCardHandler(isoDepTag);
 			
@@ -228,15 +215,15 @@ public class AndroSmexStartseite extends Activity{
 		}
 	}
 	
+	
 	private void performPACE(String pin) {	
-
-		SecurityInfos si = getSecurityInfosFromCardAccess();
-		
+		SecurityInfos si = getSecurityInfosFromCardAccess();		
 		ptag = new PaceOperator(idch, getApplicationContext());	
 		ptag.setAuthTemplate(si.getPaceInfoList().get(0), pin, ergebnisText, prefs);
 		ergebnisText.append("Start PACE\n----------\n");
 		ptag.execute((Void[])null).toString();
 	}
+	
 	
 	private void changePin() {
 		TextView newPinText = (TextView) findViewById(R.id.input_newPin);
@@ -257,6 +244,7 @@ public class AndroSmexStartseite extends Activity{
 		} else ergebnisText.append("Secure Messaging not active!");
 	}
 	
+	
 	private void nextActionSwitcher() {
 		if (nextAction == null) return;
 		if (nextAction.equals("changePIN")) changePin();
@@ -275,9 +263,29 @@ public class AndroSmexStartseite extends Activity{
 	  }
 	};
 	
-	private void registerPreferenceListener()	{
-		 
-		listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+	
+	private void registerTextChangedListerner() {
+		tWatcher = new TextWatcher(){
+			@Override
+			public void afterTextChanged(Editable s) {
+				TextView smIndicator = (TextView) findViewById(R.id.textView_SM_Indicator);
+			    if (idch!=null&&idch.isSmActive()) {	    	
+			    	smIndicator.setBackgroundColor(Color.GREEN);
+			    	smIndicator.setText(getString(R.string.status_sm_active));
+			    } else {
+			    	smIndicator.setBackgroundColor(Color.parseColor("#FFE0E00F"));
+			    	smIndicator.setText(getString(R.string.status_sm_inactive));
+			    }
+	        }
+	        public void beforeTextChanged(CharSequence s, int start, int count, int after){}
+	        public void onTextChanged(CharSequence s, int start, int before, int count){}
+	    }; 
+	    ergebnisText.addTextChangedListener(tWatcher);
+	}
+	
+	
+	private void registerPreferenceListener()	{		 
+		spListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
 	    	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
 	    		Log.d("PrefListener","LISTENING! - Pref changed for: " + key + " pref: " + prefs.getString(key, null));
 	    		int passwordRef = Integer.parseInt(prefs.getString("pref_list_password", "0"));
@@ -294,7 +302,7 @@ public class AndroSmexStartseite extends Activity{
 	    		}
 	    	}
 	    };
-	    prefs.registerOnSharedPreferenceChangeListener(listener);
+	    prefs.registerOnSharedPreferenceChangeListener(spListener);
 	}
 
 }

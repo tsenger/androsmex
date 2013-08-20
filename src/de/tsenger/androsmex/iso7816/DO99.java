@@ -30,6 +30,7 @@ public class DO99 {
 		ASN1InputStream asn1in = new ASN1InputStream(encodedData);
 		try {
 			to = (DERTaggedObject) asn1in.readObject();
+			asn1in.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
