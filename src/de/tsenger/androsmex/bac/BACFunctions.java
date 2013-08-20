@@ -11,7 +11,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import de.tsenger.androsmex.mrtd.JSmexTools;
+import de.tsenger.androsmex.crypto.AmDESCrypto;
+import de.tsenger.androsmex.iso7816.SecureMessaging;
 import de.tsenger.androsmex.tools.Crypto;
 import de.tsenger.androsmex.tools.HexString;
 
@@ -24,7 +25,7 @@ public class BACFunctions {
 	private byte[] ksenc = null;
 	private byte[] ksmac = null;
 	
-	private byte[] ssc = new byte[8];
+	private final byte[] ssc = new byte[8];
 
 	private byte[] rndicc = null;
 	private byte[] rndifd = null;
@@ -100,7 +101,9 @@ public class BACFunctions {
 
 		// 6. Construct command data for MUTUAL AUTHENTICATE and send command
 		// APDU to the MRTD's chip:
-		byte[] mu_data = JSmexTools.mergeByteArray(eifd, mifd);
+		byte[] mu_data = new byte[eifd.length+mifd.length];
+		System.arraycopy(eifd, 0, mu_data, 0, eifd.length);
+		System.arraycopy(mifd, 0, mu_data, eifd.length, mifd.length);
 		return mu_data;
 	}
 	
@@ -146,7 +149,7 @@ public class BACFunctions {
 		} else {
 			bacEstablished = false;
 		}
-		return new SecureMessaging(ksenc, ksmac, ssc);
+		return new SecureMessaging(new AmDESCrypto(), kenc, ksmac, ssc);
 	}
 
 	/**
@@ -238,7 +241,7 @@ public class BACFunctions {
 	 * @return Liefert den Wert von K_mac als Byte Array zurück
 	 */
 	private byte[] calculateKMAC(String mrzInfo) {
-		byte[] mrzinfobytes = (byte[]) mrzInfo.getBytes();
+		byte[] mrzinfobytes = mrzInfo.getBytes();
 		byte[] kseed = calculateKSeed(mrzinfobytes);
 		return computeKey(kseed, new byte[] { 0, 0, 0, 2 });
 	}
@@ -253,7 +256,7 @@ public class BACFunctions {
 	 * @return Liefert den Wert von K_enc als Byte Array zurück
 	 */
 	private byte[] calculateKENC(String mrzInfo) {
-		byte[] mrzInfoBytes = (byte[]) mrzInfo.getBytes();
+		byte[] mrzInfoBytes = mrzInfo.getBytes();
 		byte[] kseed = calculateKSeed(mrzInfoBytes);
 		return computeKey(kseed, new byte[] { 0, 0, 0, 1 });
 	}

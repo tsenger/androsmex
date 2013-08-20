@@ -4,4 +4,5 @@
 		android:title="@string/menu_clear_log" />
 	<item android:id="@+id/settings" android:icon="@drawable/ic_menu_settings"
 		android:title="@string/menu_settings" />
+	<item android:id="@+id/versioninfo" android:title="@string/app_version"></item>
 </menu>

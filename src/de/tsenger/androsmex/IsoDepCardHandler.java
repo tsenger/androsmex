@@ -2,12 +2,18 @@ package de.tsenger.androsmex;
 
 import java.io.IOException;
 
-import de.tsenger.androsmex.tools.HexString;
 import android.nfc.tech.IsoDep;
+import android.util.Log;
+import de.tsenger.androsmex.iso7816.CommandAPDU;
+import de.tsenger.androsmex.iso7816.ResponseAPDU;
+import de.tsenger.androsmex.iso7816.SecureMessaging;
+import de.tsenger.androsmex.iso7816.SecureMessagingException;
+import de.tsenger.androsmex.tools.HexString;
 
 public class IsoDepCardHandler implements CardHandler {
 	
 	private IsoDep tag = null;
+	private SecureMessaging sm = null;
 	
 	public IsoDepCardHandler(IsoDep tag) throws IOException{
 		this.tag = tag;
@@ -29,21 +35,36 @@ public class IsoDepCardHandler implements CardHandler {
 		if (tag.getHistoricalBytes()!=null) return tag.getHistoricalBytes();
 		else return tag.getHiLayerResponse();
 	}
+	
+	public int getMaxTranceiveLength() {
+		return tag.getMaxTransceiveLength();
+	}
 
+	@Override
 	public boolean isConnected() {
 		return tag.isConnected();
 	}
+		
+	public void setSecureMessaging(SecureMessaging sm) {
+		this.sm = sm;
+	}
+	
+	public boolean isSmActive() {
+		if(sm!=null) return true;
+		else return false;
+	}
 
-	public ResponseAPDU sendCommandAPDU(CommandAPDU cmd) throws Exception {
+	@Override
+	public ResponseAPDU transceive(CommandAPDU cmd) throws IOException, SecureMessagingException  {
 		byte[] rsp=null;
-		if (tag==null) throw new Exception ("Tag is NULL!");
 		if (!tag.isConnected()) tag.connect();
-			try {
-				rsp = tag.transceive(cmd.getBytes());
-			} catch (IOException e) {
-				throw new Exception("TRANSCEIVE FAILED at C-APDU: \n"+HexString.bufferToHex(cmd.getBytes())+"\nError-Message: "+e.getMessage());
-			}
-		return new ResponseAPDU(rsp);		
+		if (sm!=null)cmd = sm.wrap(cmd);
+		Log.d("CardHandler", "sent:\n"+HexString.bufferToHex(cmd.getBytes()));
+		rsp = tag.transceive(cmd.getBytes());
+		Log.d("CardHandler", "received:\n"+HexString.bufferToHex(rsp));
+		ResponseAPDU rapdu = new ResponseAPDU(rsp);
+		if (sm!=null)rapdu = sm.unwrap(rapdu);
+		return rapdu;		
 	}
 
 }

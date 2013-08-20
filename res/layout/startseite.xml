@@ -1,45 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent" android:layout_height="fill_parent"
-	android:background="#ff999977" android:orientation="vertical">
-	<LinearLayout android:layout_height="wrap_content"
-		android:id="@+id/linearLayout1" android:orientation="horizontal"
-		android:layout_width="match_parent" android:layout_marginTop="6sp">
-		<ImageView android:id="@+id/imageView1" android:src="@drawable/icon"
-			android:layout_gravity="left" android:layout_height="wrap_content"
-			android:layout_width="wrap_content" android:layout_marginLeft="6sp"
-			android:layout_marginTop="6sp"></ImageView>
-		<TextView android:text="@string/app_name"
-			android:layout_marginLeft="10sp" android:id="@+id/textView2"
-			android:layout_height="wrap_content" android:layout_width="wrap_content"
-			android:layout_marginTop="6sp" android:textColor="#FFFFFF"
-			android:textSize="20sp"></TextView>
-		<TextView android:layout_marginLeft="10sp" android:id="@+id/textView3"
-			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:layout_marginTop="6sp" android:text="@string/app_version"
-			android:textSize="10sp"></TextView>
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ff999977"
+    android:orientation="vertical" >
+
+	<LinearLayout
+	    android:id="@+id/linearLayout2"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content">
+
+	    <TextView
+	        android:id="@+id/textView1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center"
+	        android:layout_marginLeft="6sp"
+	        android:layout_marginRight="15sp"
+	        android:text="@string/startseite_info_password"
+	        android:textColor="#DDDDDD" >
+	    </TextView>
+
+	    <EditText
+	        android:id="@+id/input_password"
+	        android:layout_width="0dip"
+	        android:layout_height="wrap_content"
+	        android:layout_marginRight="6sp"
+	        android:layout_weight="0.80"
+	        android:inputType="number"
+	        android:maxLines="1"
+	        android:text="" >
+	    </EditText>
+
+	    <Button
+	        android:id="@+id/button_start"
+	        style="@android:style/DeviceDefault.Light.SegmentedButton"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="right"
+	        android:layout_marginRight="6sp"
+	        android:text="@string/button_start_text" 
+	        android:onClick="onClickStartPACE" />
+	</LinearLayout>
+
+	<LinearLayout
+	    android:id="@+id/linearLayout3"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content">
+	    
+	    <TextView
+	        android:id="@+id/textView2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center"
+	        android:layout_marginLeft="6sp"
+	        android:layout_marginRight="15sp"
+	        android:text="@string/startseite_text_newPin"
+	        android:textColor="#DDDDDD" >
+	    </TextView>
+
+	    <EditText
+	        android:id="@+id/input_newPin"
+	        android:layout_width="0dip"
+	        android:layout_height="wrap_content"
+	        android:layout_marginRight="6sp"
+	        android:layout_weight="0.80"
+	        android:inputType="number"
+	        android:maxLines="1"
+	        android:text="" >
+	    </EditText>
+
+		<Button
+		    android:id="@+id/button_chgpin"
+		    style="@android:style/DeviceDefault.Light.SegmentedButton"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_gravity="right"
+		    android:layout_marginRight="6sp"
+		    android:text="@string/button_chgpin_text"
+		    android:onClick="onClickChangePIN" />
 
 	</LinearLayout>
-	<LinearLayout android:layout_height="wrap_content"
-		android:id="@+id/linearLayout2" android:layout_width="match_parent">
-		<TextView android:layout_gravity="center" android:id="@+id/textView1"
-			android:textColor="#000000" android:layout_height="wrap_content"
-			android:layout_width="wrap_content" android:text="@string/startseite_info_password"
-			android:layout_marginRight="15sp" android:layout_marginLeft="6sp"></TextView>
-		<EditText android:maxLines="1" android:text=""
-			android:inputType="number" android:id="@+id/eingabe_mrz"
-			android:layout_height="wrap_content" android:layout_width="match_parent"
-			android:layout_marginRight="6sp"></EditText>
-	</LinearLayout>
-	<Button android:id="@+id/button_start" android:layout_height="wrap_content"
-		android:text="@string/button_start_text" android:layout_width="wrap_content"
-		android:layout_gravity="right" android:layout_marginRight="6sp" />
-	<TextView android:text="" android:id="@+id/text_ergebnis"
-		android:textColor="#000000" android:background="#FFE0E0E0"
-		android:layout_width="match_parent" android:layout_height="match_parent"
-		android:textSize="10sp" android:layout_marginLeft="6sp"
-		android:layout_marginRight="6sp" android:layout_marginBottom="6sp"
-		android:scrollbars="vertical" android:scrollbarStyle="insideOverlay"
-		android:scrollbarDefaultDelayBeforeFade="1750" android:scrollbarSize="25sp" />
+
+	<RelativeLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" >
+		
+	    <TextView
+	        android:id="@+id/text_ergebnis"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:layout_above="@+id/textView_SM_Indicator"
+	        android:layout_gravity="bottom"
+	        android:layout_marginLeft="6sp"
+	        android:layout_marginRight="6sp"
+	        android:background="#FFE0E0E0"
+	        android:gravity="bottom"
+	        android:overScrollMode="always"
+	        android:scrollHorizontally="false"
+	        android:scrollbarAlwaysDrawVerticalTrack="true"
+	        android:scrollbarStyle="insideOverlay"
+	        android:scrollbars="vertical"
+	        android:text=""
+	        android:textColor="#000000"
+	        android:textSize="10sp" >
+	
+		</TextView>
+
+	    <TextView
+	        android:id="@+id/textView_SM_Indicator"
+	        android:layout_width="match_parent"
+	        android:layout_height="30sp"
+	        android:layout_alignParentBottom="true"
+	        android:layout_alignParentLeft="true"
+	        android:layout_marginBottom="6sp"
+	        android:layout_marginLeft="6sp"
+	        android:layout_marginRight="6sp"
+	        android:layout_marginTop="6sp"
+	        android:background="#FFE0E00F"
+	        android:gravity="center"
+	        android:text="@string/status_sm_inactive"
+	        android:textColor="#000000"
+	        android:textSize="20sp" />
+
+	</RelativeLayout>
+
 
 </LinearLayout>

@@ -17,7 +17,6 @@
 		<item>Inspection System</item>
 		<item>Authentication Terminal</item>
 		<item>Signature Terminal</item>
-
 	</string-array>
 	<string-array name="liste_werte_terminaltype">
 		<item>0</item>

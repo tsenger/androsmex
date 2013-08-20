@@ -15,8 +15,12 @@
 	<ScrollView android:layout_height="match_parent"
 		android:layout_width="match_parent" android:id="@+id/scrollView1"
 		android:layout_margin="6dip">
-		<LinearLayout android:id="@+id/linearLayout2"
-			android:layout_width="match_parent">
+
+		<LinearLayout
+		    android:id="@+id/linearLayout2"
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent" >
+
 			<TextView android:text="TextView" android:id="@+id/textView1"
 				android:layout_width="match_parent" android:background="#fffefefe"
 				android:layout_height="fill_parent" android:lines="50"

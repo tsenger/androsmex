@@ -3,11 +3,15 @@
 	<string name="startseite_info_password">PACE password</string>
 	<string name="app_name">AndroSmex</string>
 	<string name="button_start_text">Start PACE</string>
+	<string name="button_chgpin_text">Change PIN</string>
 	<string name="menu_clear_log">clear Log</string>
 	<string name="menu_settings">Settings</string>
 	<string name="preferences_titel">Preferences</string>
 	<string name="preferences_password_selection">PACE password</string>
 	<string name="preferences_terminal_selection">Terminal type</string>
 	<string name="preferences_category_pace">PACE settings</string>
-	<string name="app_version">V0.1</string>
+	<string name="app_version">version 0.2</string>
+	<string name="startseite_text_newPin">new PIN</string>
+	<string name="status_sm_inactive">Secure Messaging inactive</string>
+	<string name="status_sm_active">Secure Messaging active</string>
 </resources>
