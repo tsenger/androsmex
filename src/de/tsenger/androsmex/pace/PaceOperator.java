@@ -43,7 +43,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
-import android.widget.TextView;
 import de.tsenger.androsmex.IsoDepCardHandler;
 import de.tsenger.androsmex.asn1.AmDHPublicKey;
 import de.tsenger.androsmex.asn1.AmECPublicKey;
@@ -145,58 +144,55 @@ public class PaceOperator extends AsyncTask<Void, String, String> {
 	}
 
 	public void performPACE() throws IOException, SecureMessagingException, PaceException {
+
 		// send MSE:SetAT
-		
-			int resp = sendMSESetAT(terminalType).getSW();
-			if (resp != 0x9000)
-				publishProgress("MSE:Set AT failed. SW: "+ Integer.toHexString(resp));
+		logger.log(Level.FINE, "Send MSE:Set AT command");
+		int resp = sendMSESetAT(terminalType).getSW();
+		if (resp != 0x9000)
+			logger.log(Level.FINE, "MSE:Set AT failed. SW: " + Integer.toHexString(resp));
 
-			// send first GA and get nonce
-			byte[] nonce_z = getNonce().getDataObject(0);
-//			byte[] nonce_z = HexString.hexToBuffer("9369fbd6774b8917398cc1363f61a43c");
-			publishProgress("encrypted nonce z:\n"
-					+ HexString.bufferToHex(nonce_z));
-			byte[] nonce_s = decryptNonce(nonce_z);
-			publishProgress("decrypted nonce s:\n"
-					+ HexString.bufferToHex(nonce_s));
-			byte[] X1 = pace.getX1(nonce_s);
+		// send first GA and get nonce
+		logger.log(Level.FINE, "1. General Authentication (get nonce) command");
+		byte[] nonce_z = getNonce().getDataObject(0);
+//		logger.log(Level.FINE, "encrypted nonce z:\n" + HexString.bufferToHex(nonce_z));
+		byte[] nonce_s = decryptNonce(nonce_z);
+//		logger.log(Level.FINE, "decrypted nonce s:\n" + HexString.bufferToHex(nonce_s));
+		byte[] X1 = pace.getX1(nonce_s);
 
-			// X1 zur Karte schicken und Y1 empfangen
-			publishProgress("GA step 1: \n");
-			byte[] Y1 = mapNonce(X1).getDataObject(2);
-			publishProgress("Receive Y1: " + HexString.bufferToHex(Y1));
+		// X1 zur Karte schicken und Y1 empfangen
+		logger.log(Level.FINE, "2. General Authentication (map nonce) command");
+		byte[] Y1 = mapNonce(X1).getDataObject(2);;
 
-			byte[] X2 = pace.getX2(Y1);
-			// X2 zur Karte schicken und Y2 empfangen.
-			publishProgress("GA step 2: \n");
-			byte[] Y2 = performKeyAgreement(X2).getDataObject(4);
-			publishProgress("Receive Y2: " + HexString.bufferToHex(Y2));
+		byte[] X2 = pace.getX2(Y1);
+		// X2 zur Karte schicken und Y2 empfangen.
+		logger.log(Level.FINE, "3. General Authentication (key agreement) command");
+		byte[] Y2 = performKeyAgreement(X2).getDataObject(4);
 
-			byte[] S = pace.getSharedSecret_K(Y2);
-			byte[] kenc = getKenc(S);
-			byte[] kmac = getKmac(S);
-			publishProgress("Shared Secret K: " + HexString.bufferToHex(S)
-					+ "\nkenc: " + HexString.bufferToHex(kenc) + "\nkmac: "
-					+ HexString.bufferToHex(kmac));
+		byte[] S = pace.getSharedSecret_K(Y2); 
+		byte[] kenc = getKenc(S);
+		byte[] kmac = getKmac(S);
+//		logger.log(Level.FINE, "Shared Secret K: " + HexString.bufferToHex(S) + "\nkenc: " + HexString.bufferToHex(kenc) + "\nkmac: "
+//				+ HexString.bufferToHex(kmac));
 
-			// Authentication Token T_PCD berechnen
-			byte[] tpcd = calcAuthToken(kmac, Y2);
+		// Authentication Token T_PCD berechnen
+		byte[] tpcd = calcAuthToken(kmac, Y2);
 
-			// Authentication Token zur Karte schicken
-			byte[] tpicc = performMutualAuthentication(tpcd).getDataObject(6);
+		// Authentication Token zur Karte schicken
+		logger.log(Level.FINE, "4. General Authentication (mutual authentication) command");
+		byte[] tpicc = performMutualAuthentication(tpcd).getDataObject(6);
 
-			// Authentication Token T_PICC berechnen
-			byte[] tpicc_strich = calcAuthToken(kmac, X2);
+		// Authentication Token T_PICC berechnen
+		byte[] tpicc_strich = calcAuthToken(kmac, X2);
 
-			// Prüfe ob tpicc = t'picc=MAC(kmac,X2)
-			if (!Arrays.areEqual(tpicc, tpicc_strich))
-				publishProgress("Authentication Tokens are different");
+		// Prüfe ob tpicc = t'picc=MAC(kmac,X2)
+		if (!Arrays.areEqual(tpicc, tpicc_strich)) {
+			logger.log(Level.FINE, "Mutual Authentication failed! Tokens are different");
+			throw new PaceException("Mutual Authentication failed! Tokens are different");
+		}
 
-			sm = new SecureMessaging(crypto, kenc, kmac,
-					new byte[crypto.getBlockSize()]);	
-			
-			card.setSecureMessaging(sm);
-		
+		sm = new SecureMessaging(crypto, kenc, kmac, new byte[crypto.getBlockSize()]);
+
+		card.setSecureMessaging(sm);
 
 	}
 
@@ -247,7 +243,6 @@ public class PaceOperator extends AsyncTask<Void, String, String> {
 	private DynamicAuthenticationData sendGeneralAuthenticate(boolean chaining, byte[] data) throws SecureMessagingException, PaceException, IOException {
 
 		CommandAPDU capdu = new CommandAPDU(chaining ? 0x10 : 0x00, 0x86, 0x00, 0x00, data, 0xff);
-		publishProgress(HexString.bufferToHex(capdu.getBytes()));
 
 		ResponseAPDU resp = card.transceive(capdu);
 
@@ -287,39 +282,20 @@ public class PaceOperator extends AsyncTask<Void, String, String> {
 	}
 
 	private byte[] decryptNonce(byte[] z) {
-
 		byte[] derivatedPassword = null;
-		try {
-			derivatedPassword = getKey(keyLength, passwordBytes, 3);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		derivatedPassword = getKey(keyLength, passwordBytes, 3);
 		return crypto.decryptBlock(derivatedPassword, z);
 	}
 
 	private byte[] getKenc(byte[] sharedSecret_S) {
-		try {
-			return getKey(keyLength, sharedSecret_S, 1);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		return getKey(keyLength, sharedSecret_S, 1);
 	}
 
 	private byte[] getKmac(byte[] sharedSecret_S) {
-		try {
-			return getKey(keyLength, sharedSecret_S, 2);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		return getKey(keyLength, sharedSecret_S, 2);
 	}
 
-	private ResponseAPDU sendMSESetAT(int terminalType) throws IOException,
-			SecureMessagingException {
+	private ResponseAPDU sendMSESetAT(int terminalType) throws IOException, SecureMessagingException {
 		MSESetAT mse = new MSESetAT();
 		mse.setAT(MSESetAT.setAT_PACE);
 		mse.setProtocol(protocolOIDString);
@@ -340,7 +316,6 @@ public class PaceOperator extends AsyncTask<Void, String, String> {
 			throw new IllegalArgumentException("Unknown Terminal Reference: "
 					+ terminalType);
 		}
-		publishProgress("MSE:Set AT:\n"+HexString.bufferToHex(mse.getCommandAPDU().getBytes()));
 		return card.transceive(mse.getCommandAPDU());
 	}
 
@@ -392,7 +367,7 @@ public class PaceOperator extends AsyncTask<Void, String, String> {
 		}
 	}
 
-	private byte[] getKey(int keyLength, byte[] K, int c) throws Exception {
+	private byte[] getKey(int keyLength, byte[] K, int c)  {
 
 		byte[] key = null;
 
@@ -416,15 +391,14 @@ public class PaceOperator extends AsyncTask<Void, String, String> {
 	}
 
 	// TODO Funktioniert momentan nur mit EC
-	private void getProprietaryDomainParameters(PaceDomainParameterInfo pdpi)
-			throws Exception {
+	private void getProprietaryDomainParameters(PaceDomainParameterInfo pdpi)	throws PaceException {
 		if (pdpi.getDomainParameter().getAlgorithm().toString()
 				.contains(BSIObjectIdentifiers.id_ecc.toString())) {
 			ASN1Sequence seq = (ASN1Sequence) pdpi.getDomainParameter()
 					.getParameters().getDERObject().toASN1Object();
 			ecdhParameters = new X9ECParameters(seq);
 		} else
-			throw new Exception(
+			throw new PaceException(
 					"Can't decode properietary domain parameters in PaceDomainParameterInfo!");
 	}
 
@@ -501,16 +475,18 @@ public class PaceOperator extends AsyncTask<Void, String, String> {
 		try {
 			starttime = System.currentTimeMillis();
 			performPACE();
-			endtime = System.currentTimeMillis();
+			
 		} catch (IOException e) {
-			publishProgress(e.getMessage());
+			logger.log(Level.FINE, e.getMessage());
 			return "PACE failed!";
 		} catch (SecureMessagingException e) {
-			publishProgress(e.getMessage());
+			logger.log(Level.FINE, e.getMessage());
 			return "PACE failed!";
 		} catch (PaceException e) {
-			publishProgress(e.getMessage());
+			logger.log(Level.FINE, e.getMessage());
 			return "PACE failed!";
+		} finally {
+			endtime = System.currentTimeMillis();
 		}
 		
 		return "PACE established!";
@@ -519,7 +495,7 @@ public class PaceOperator extends AsyncTask<Void, String, String> {
 	@Override
 	protected void onProgressUpdate(String... strings) {
 		if (strings != null) {
-			logger.log(Level.FINE, strings[0]);
+			logger.log(Level.INFO, strings[0]);
 		}
 	}
 

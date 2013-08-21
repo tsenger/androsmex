@@ -69,9 +69,9 @@ public class KeyDerivationFunction {
 	 *            3 for deriving encryption keys from a password
 	 * @throws Exception c must be 1, 2 or 3
 	 */
-	public KeyDerivationFunction(byte[] K, int c) throws Exception {
+	public KeyDerivationFunction(byte[] K, int c) throws IllegalArgumentException {
 		
-		if (c<=0||c>3) throw new Exception("c must be 1, 2 or 3!");
+		if (c<=0||c>3) throw new IllegalArgumentException("c must be 1, 2 or 3!");
 		
 		byte[] cBytes = intToByteArray(c);
 		

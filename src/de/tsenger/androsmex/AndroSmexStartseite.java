@@ -24,7 +24,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -104,18 +103,13 @@ public class AndroSmexStartseite extends Activity{
 		ergebnisText.setTypeface(Typeface.MONOSPACE);
 		registerTextChangedListerner();
 		
-		//Set up Logger to TextView
-		TextViewHandler handler = new TextViewHandler(ergebnisText);
-		asLogger.addHandler(handler);
-		asLogger.setLevel(Level.INFO);
-		
+		// Set up Preferences		
 		prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		registerPreferenceListener();
 
+		//Set up NFC Intents
 		mAdapter = NfcAdapter.getDefaultAdapter(this);
-
 		mPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-
 		IntentFilter ndef = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
 		try {
 			ndef.addDataType("*/*");
@@ -124,6 +118,11 @@ public class AndroSmexStartseite extends Activity{
 		}
 		mFilters = new IntentFilter[] { ndef, };
 		mTechLists = new String[][] { new String[] { IsoDep.class.getName() } };
+		
+		//Set up Logger to TextView
+		TextViewHandler handler = new TextViewHandler(this, ergebnisText);
+		asLogger.addHandler(handler);
+		asLogger.setLevel(Level.parse(prefs.getString("pref_list_log", "INFO")));
 		
 		// Register mMessageReceiver to receive local messages.
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("pace_finished"));
@@ -142,6 +141,8 @@ public class AndroSmexStartseite extends Activity{
 		case 3: password_info.setText("PIN"); break;
 		case 4: password_info.setText("PUK"); break;
 		}
+		
+		asLogger.setLevel(Level.parse(prefs.getString("pref_list_log", "INFO")));
 		
 		// Register mMessageReceiver to receive messages.
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("pace_finished"));
@@ -214,7 +215,7 @@ public class AndroSmexStartseite extends Activity{
 		Tag discoveredTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);		
 		if (discoveredTag != null) {			
 			IsoDep isoDepTag = IsoDep.get(discoveredTag);
-			idch = new IsoDepCardHandler(isoDepTag);
+			idch = new IsoDepCardHandler(isoDepTag, asLogger);
 			
 			asLogger.log(Level.INFO, "Tag ID: " + HexString.bufferToHex(discoveredTag.getId()));
 			String[] techList = discoveredTag.getTechList();
@@ -237,13 +238,12 @@ public class AndroSmexStartseite extends Activity{
 		TextView newPinText = (TextView) findViewById(R.id.input_newPin);
 		String newPin = newPinText.getText().toString();
 		if (idch.isSmActive()) {
+			asLogger.log(Level.INFO, "Send Reset Retry Counter command");
 			try {
 				CommandAPDU capdu = CardCommands.resetRetryCounter((byte)0x03,newPin.getBytes());
-				asLogger.log(Level.FINE, "Reset Retry Counter CAPDU:\n"+HexString.bufferToHex(capdu.getBytes()));
 				ResponseAPDU rapdu = idch.transceive(capdu);
-				asLogger.log(Level.FINE, "Received RAPDU:\n"+HexString.bufferToHex(rapdu.getBytes()));
 				if (rapdu.getSW()==0x9000) asLogger.log(Level.INFO, "PIN changed successful");
-				else asLogger.log(Level.INFO, "PIN changed failed");
+				else asLogger.log(Level.INFO, "changing PIN failed");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
